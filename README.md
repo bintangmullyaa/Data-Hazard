@@ -13,7 +13,8 @@ Proyek ini bertujuan untuk:
    * **WAR (*Write After Read*)**: Ketergantungan nama/semu (*Anti-Dependency*).
    * **WAW (*Write After Write*)**: Ketergantungan output (*Output Dependency*).
 3. **Mitigasi Hazard WAR dengan Register Renaming**: Mendemonstrasikan bagaimana prosesor modern mengatasi ketergantungan semu (WAR) dengan mengganti nama register tujuan secara dinamis, sehingga instruksi yang sebelumnya terhambat dapat dieksekusi secara paralel.
-4. **Visualisasi Graf Dependensi**: Memvisualisasikan alur dependensi instruksi dalam bentuk diagram graf terarah (*Directed Graph*), serta membandingkan grafik sebelum dan sesudah diterapkannya *Register Renaming*.
+4. **Simulasi Edukasi Hazard WAW (Timeline Waktu)**: Menampilkan simulasi berbasis latensi waktu eksekusi untuk melihat langsung bagaimana instruksi cepat dapat menimpa register lebih dulu daripada instruksi lambat (*Write-Back Inversion*).
+5. **Visualisasi Graf & Diagram Waktu**: Memvisualisasikan alur dependensi dalam bentuk graf berarah (*Directed Graph*), komparasi sebelum-sesudah *Register Renaming*, serta diagram batang waktu (*Gantt Chart*) eksekusi WAW.
 
 ---
 
@@ -23,7 +24,7 @@ Proyek ini menggunakan **Python 3.8+** dengan pustaka berikut:
 
 | Pustaka | Fungsi |
 | :--- | :--- |
-| **matplotlib** | Menampilkan dan menggambar diagram visualisasi graf |
+| **matplotlib** | Menampilkan diagram visualisasi graf dan timeline waktu eksekusi |
 | **networkx** | Memodelkan struktur graf dependensi instruksi (*DiGraph*) |
 | **scipy** | Algoritma kalkulasi posisi layout graf (*spring layout*) |
 | **ipykernel** | Kernel untuk menjalankan notebook di VS Code / Jupyter |
@@ -42,7 +43,7 @@ pip install -r requirements.txt
 
 ```text
 Data-Hazard/
-├── ILP.ipynb           # Notebook utama (Simulasi ILP, Analisis Hazard, Register Renaming)
+├── ILP.ipynb           # Notebook utama (Simulasi ILP, Analisis Hazard, Register Renaming, WAW Timeline)
 ├── requirements.txt    # Daftar dependensi Python
 ├── .gitignore          # File ignore git untuk cache dan checkpoint
 └── README.md           # Dokumentasi proyek
@@ -56,12 +57,12 @@ Data-Hazard/
 2. Pastikan kernel Python yang dipilih sudah terpasang dependensi yang tercantum di atas.
 3. Jalankan sel notebook:
    * **Cell 1**: Simulasi siklus ILP dasar (Perbandingan Sequential vs. Parallel Cycles).
-   * **Cell 2**: Deteksi hazard komprehensif (RAW, WAR, WAW), proses *Register Renaming*, dan visualisasi grafik Sebelum vs. Sesudah Renaming.
+   * **Cell 2**: Deteksi hazard komprehensif (RAW, WAR, WAW), proses *Register Renaming*, serta simulasi visual timeline bahaya WAW.
 
 ---
 
-## 💡 Ringkasan Hazard & Register Renaming
+## 💡 Ringkasan Hazard
 
-* **RAW**: Instruksi $B$ membaca register yang baru ditulis instruksi $A$. Wajib diselesaikan dengan *forwarding* atau *stall*.
-* **WAR**: Instruksi $B$ menulis ke register yang sedang dibaca instruksi $A$. Merupakan *false dependency* karena hanya disebabkan oleh keterbatasan nama register.
-* **Solusi Register Renaming**: Register target pada instruksi $B$ diubah ke register temporer (misal: `R2` $\rightarrow$ `R2_renamed1`). Hasilnya, ketergantungan WAR hilang dan instruksi dapat dijalankan secara bersamaan.
+* **RAW (*Read After Write*)**: Instruksi $B$ membaca register yang baru ditulis instruksi $A$. Wajib diselesaikan dengan *forwarding* atau *stall*.
+* **WAR (*Write After Read*)**: Instruksi $B$ menulis ke register yang sedang dibaca instruksi $A$. Merupakan *false dependency* yang diatasi dengan **Register Renaming** (misal: `R2` $\rightarrow$ `R2_renamed1`).
+* **WAW (*Write After Write*)**: Dua instruksi menulis ke register yang sama. Bahaya terjadi saat eksekusi paralel karena instruksi yang lambat dapat menimpa hasil instruksi cepat (*Output Dependency*).
